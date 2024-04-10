@@ -16,7 +16,7 @@ module.exports = {
                 "prompt_template": "<s>[INST] {prompt} [/INST] ", // Prompt template
                 "presence_penalty": 0 // Presence penalty
             },
-            "stream": !stream // Option to stream the response
+            "stream": stream // Option to stream the response
         }
 
         // Make a POST request to the Mistral API to generate predictions
