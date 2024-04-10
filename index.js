@@ -3,7 +3,7 @@ const axios = require('axios')
 
 // Export the mistral function
 module.exports = {
-    mistral: async (prompt, stream=false)=>{
+    mistral: async (prompt, stream = false) => {
         // Define the data payload for the API request
         const data = {
             "input": {
@@ -26,14 +26,19 @@ module.exports = {
             }
         })
 
-        // Fetch the generated predictions using the task ID
-        let ndata = await axios.get(`https://replicate.com/api/predictions/${response.data.id}`, {
-            headers: {
-                'Content-Type': 'application/json'
+        console.log('Task Created: ', response.data.id);
+        let status = '';
+        while (status !== 'succeeded') {
+            let ndata = await axios.get(`https://replicate.com/api/predictions/${response.data.id}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            status = ndata.data.status;
+            if (status === 'succeeded') {
+                return {...ndata.data, final_result: ndata.data.output.join('')};
             }
-        })
-
-        // Return the data including the final result
-        return {...ndata.data, final_result: ndata.data.output.join('')}
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before checking status again
+        }
     }
 }
